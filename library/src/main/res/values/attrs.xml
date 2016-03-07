@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="DoubleSeekBar">
+        <attr name="DB_ThumbRadius" format="dimension"/>
+        <attr name="DB_ThumbColor" format="color"/>
+        <attr name="DB_ProgressColor" format="color"/>
+        <attr name="DB_ProgressBackgroundColor" format="color"/>
+        <attr name="DB_ProgressWidth" format="dimension"/>
+        <attr name="DB_TextSize" format="dimension"/>
+        <attr name="DB_TextColor" format="color"/>
+    </declare-styleable>
+</resources>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="DoubleSeekBar">
+        <item name="DB_ThumbRadius">12dp</item>
+        <item name="DB_ThumbColor">#FFFFFF</item>
+        <item name="DB_ProgressColor">#57cad1</item>
+        <item name="DB_ProgressBackgroundColor">#1f000000</item>
+        <item name="DB_ProgressWidth">2dp</item>
+        <item name="DB_TextSize">15sp</item>
+        <item name="DB_TextColor">#303030</item>
+    </style>
+</resources>
