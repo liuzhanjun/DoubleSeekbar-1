@@ -4,7 +4,12 @@
 
   [1]: https://github.com/AlphaBoom/DoubleSeekbar/raw/master/ScreenShots/double_seekbar.gif
   
-#Use
+#Usage
+ Add a dependency to your `build.gradle`:
+ 
+ ```
+ compile 'wzd.anarchy:library:unspecified'
+ ```
 
      <com.anarchy.library.DoubleSeekBar
        android:layout_width="match_parent"
