@@ -1,5 +1,7 @@
 package com.anarchy.library;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -11,6 +13,7 @@ import android.os.Parcelable;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.util.Property;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -90,8 +93,10 @@ public class DoubleSeekBar extends View {
 
         mThumbShadowRadius = (int) (getResources().getDisplayMetrics().density * THUMB_SHADOW);
         mYOffset = (int) (getResources().getDisplayMetrics().density * Y_OFFSET);
-        ViewCompat.setLayerType(this, ViewCompat.LAYER_TYPE_SOFTWARE, mThumbPaint);
-        mThumbPaint.setShadowLayer(mThumbShadowRadius, 0, mYOffset, KEY_SHADOW_COLOR);
+        if(!isInEditMode()) {
+            ViewCompat.setLayerType(this, ViewCompat.LAYER_TYPE_SOFTWARE, mThumbPaint);
+            mThumbPaint.setShadowLayer(mThumbShadowRadius, 0, mYOffset, KEY_SHADOW_COLOR);
+        }
         mThumbPaint.setColor(mThumbColor);
     }
 
@@ -199,6 +204,41 @@ public class DoubleSeekBar extends View {
     private SelectInfo firstInfo = new SelectInfo();
     private SelectInfo secondInfo = new SelectInfo();
 
+    /**
+     * reset to default state
+     */
+    public void reset(){
+        AnimatorSet set = new AnimatorSet();
+        set.play(ObjectAnimator.ofFloat(this,mFirstThumbProperty,new float[]{0.0f}))
+                .with(ObjectAnimator.ofFloat(this,mSecondThumbProperty,new float[]{1.0f}));
+        set.setDuration(200);
+        set.start();
+    }
+    /**
+     * get first thumb prompt
+     * @return
+     */
+    public int getBeginTime(){
+        return (int) (mFirstThumbRatio*24);
+    }
+
+
+    public void setBeginTime(int beginTime){
+        mFirstThumbRatio = beginTime/24f;
+    }
+
+
+    public void setEndTime(int endTime){
+        mSecondThumbRatio = endTime/24f;
+    }
+
+    /**
+     * get second thumb prompt
+     * @return
+     */
+    public int getEndTime(){
+        return (int) (mSecondThumbRatio*24);
+    }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -265,6 +305,9 @@ public class DoubleSeekBar extends View {
                 mOnSeekBarChangeListener.onProgressChanged(this,mFirstThumbRatio,mSecondThumbRatio);
             }
             invalidate();
+        }
+        if(ViewCompat.isAttachedToWindow(this)){
+            getParent().requestDisallowInterceptTouchEvent(firstInfo.isCaptured || secondInfo.isCaptured);
         }
         return firstInfo.isCaptured || secondInfo.isCaptured;
     }
@@ -377,4 +420,31 @@ public class DoubleSeekBar extends View {
             out.writeFloat(secondThumbRatio);
         }
     }
+    private Property<DoubleSeekBar,Float> mFirstThumbProperty = new Property<DoubleSeekBar, Float>(Float.class,"firstThumbRatio") {
+        @Override
+        public Float get(DoubleSeekBar object) {
+            return object.mFirstThumbRatio;
+        }
+
+        @Override
+        public void set(DoubleSeekBar object, Float value) {
+            object.mFirstThumbRatio = value;
+            object.mFirstThumb.set(mStartPoint.x + mProgressLength * mFirstThumbRatio - HIT_SCOPE_RATIO * mThumbRadius, mStartPoint.y - HIT_SCOPE_RATIO * mThumbRadius,
+                    mStartPoint.x + mProgressLength * mFirstThumbRatio + HIT_SCOPE_RATIO * mThumbRadius, mStartPoint.y + HIT_SCOPE_RATIO * mThumbRadius);
+            object.invalidate();
+        }
+    };
+    private Property<DoubleSeekBar,Float> mSecondThumbProperty = new Property<DoubleSeekBar, Float>(Float.class,"secondThumbRatio") {
+        @Override
+        public Float get(DoubleSeekBar object) {
+            return object.mSecondThumbRatio;
+        }
+
+        @Override
+        public void set(DoubleSeekBar object, Float value) {
+            object.mSecondThumbRatio = value;
+            object.mSecondThumb.set(mStartPoint.x + mProgressLength * mSecondThumbRatio - HIT_SCOPE_RATIO * mThumbRadius, mStartPoint.y - HIT_SCOPE_RATIO * mThumbRadius,
+                    mStartPoint.x + mProgressLength * mSecondThumbRatio + HIT_SCOPE_RATIO * mThumbRadius, mStartPoint.y + HIT_SCOPE_RATIO * mThumbRadius);
+        }
+    };
 }
